@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: javaddit
+      POSTGRES_USER: javaddit
+      POSTGRES_PASSWORD: secret
+    ports: ["5432:5432"]
+    volumes: [db:/var/lib/postgresql/data]
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+
+volumes:
+  db:
+
