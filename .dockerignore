@@ -1,0 +1,52 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# IDE files
+.idea
+.vscode
+.settings
+.project
+.classpath
+*.iml
+*.iws
+*.ipr
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+
+# Build files
+*.log
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation
+README.md
+LICENSE
+docs/
+
+# Test files
+**/test/**
+**/*Test.java
+**/*Tests.java
+
+# Development configuration
+application-local.yml
+application-local.properties
+application-dev.yml
+application-dev.properties
+.env
+.env.local
