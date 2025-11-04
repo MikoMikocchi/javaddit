@@ -1,0 +1,54 @@
+package com.example.javaddit.service;
+
+import com.example.javaddit.dto.CommunityRequest;
+import com.example.javaddit.dto.CommunityResponse;
+import com.example.javaddit.entity.Community;
+import com.example.javaddit.repository.CommunityRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class CommunityService {
+
+    private final CommunityRepository communityRepository;
+
+    @Transactional(readOnly = true)
+    public List<CommunityResponse> getAllCommunities() {
+        return communityRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public CommunityResponse createCommunity(CommunityRequest request) {
+        if (communityRepository.existsByName(request.getName())) {
+            throw new IllegalArgumentException("Community with name '" + request.getName() + "' already exists");
+        }
+
+        Community community = new Community();
+        community.setName(request.getName().toLowerCase());
+        community.setTitle(request.getTitle());
+        community.setDescription(request.getDescription());
+        community.setIsNsfw(request.getIsNsfw() != null ? request.getIsNsfw() : false);
+
+        Community saved = communityRepository.save(community);
+        return mapToResponse(saved);
+    }
+
+    private CommunityResponse mapToResponse(Community community) {
+        CommunityResponse response = new CommunityResponse();
+        response.setId(community.getId());
+        response.setName(community.getName());
+        response.setTitle(community.getTitle());
+        response.setDescription(community.getDescription());
+        response.setIsNsfw(community.getIsNsfw());
+        response.setCreatedAt(community.getCreatedAt());
+        response.setUpdatedAt(community.getUpdatedAt());
+        return response;
+    }
+}
