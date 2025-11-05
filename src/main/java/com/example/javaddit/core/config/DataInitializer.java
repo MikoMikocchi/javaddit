@@ -1,7 +1,7 @@
-package com.example.javaddit.config;
+package com.example.javaddit.core.config;
 
-import com.example.javaddit.entity.User;
-import com.example.javaddit.repository.UserRepository;
+import com.example.javaddit.features.user.entity.User;
+import com.example.javaddit.features.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;

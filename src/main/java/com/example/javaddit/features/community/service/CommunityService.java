@@ -1,9 +1,9 @@
-package com.example.javaddit.service;
+package com.example.javaddit.features.community.service;
 
-import com.example.javaddit.dto.CommunityRequest;
-import com.example.javaddit.dto.CommunityResponse;
-import com.example.javaddit.entity.Community;
-import com.example.javaddit.repository.CommunityRepository;
+import com.example.javaddit.features.community.dto.CommunityRequest;
+import com.example.javaddit.features.community.dto.CommunityResponse;
+import com.example.javaddit.features.community.entity.Community;
+import com.example.javaddit.features.community.repository.CommunityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

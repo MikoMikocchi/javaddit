@@ -1,4 +1,4 @@
-package com.example.javaddit.entity;
+package com.example.javaddit.features.user.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,31 +10,36 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "communities")
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Community {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 50)
-    private String name;
+    @Column(nullable = false, length = 30)
+    private String username;
 
-    @Column(length = 100)
-    private String title;
+    @Column(nullable = false, length = 320)
+    private String email;
+
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
+
+    @Column(name = "display_name", length = 50)
+    private String displayName;
 
     @Column(columnDefinition = "TEXT")
-    private String description;
+    private String about;
 
-    @Column(name = "is_nsfw", nullable = false)
-    private Boolean isNsfw = false;
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted = false;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id")
-    private User owner;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

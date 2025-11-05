@@ -1,6 +1,6 @@
-package com.example.javaddit.repository;
+package com.example.javaddit.features.user.repository;
 
-import com.example.javaddit.entity.User;
+import com.example.javaddit.features.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

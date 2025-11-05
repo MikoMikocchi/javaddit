@@ -1,8 +1,8 @@
-package com.example.javaddit.controller;
+package com.example.javaddit.features.community.controller;
 
-import com.example.javaddit.dto.CommunityRequest;
-import com.example.javaddit.dto.CommunityResponse;
-import com.example.javaddit.service.CommunityService;
+import com.example.javaddit.features.community.dto.CommunityRequest;
+import com.example.javaddit.features.community.dto.CommunityResponse;
+import com.example.javaddit.features.community.service.CommunityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

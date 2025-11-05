@@ -1,4 +1,4 @@
-package com.example.javaddit.config;
+package com.example.javaddit.core.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.example.javaddit.dto;
+package com.example.javaddit.features.post.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

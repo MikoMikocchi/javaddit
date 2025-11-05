@@ -1,4 +1,4 @@
-package com.example.javaddit.dto;
+package com.example.javaddit.features.post.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

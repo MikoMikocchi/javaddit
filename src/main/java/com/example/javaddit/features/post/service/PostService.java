@@ -1,13 +1,13 @@
-package com.example.javaddit.service;
+package com.example.javaddit.features.post.service;
 
-import com.example.javaddit.dto.PostRequest;
-import com.example.javaddit.dto.PostResponse;
-import com.example.javaddit.entity.Community;
-import com.example.javaddit.entity.Post;
-import com.example.javaddit.entity.User;
-import com.example.javaddit.repository.CommunityRepository;
-import com.example.javaddit.repository.PostRepository;
-import com.example.javaddit.repository.UserRepository;
+import com.example.javaddit.features.post.dto.PostRequest;
+import com.example.javaddit.features.post.dto.PostResponse;
+import com.example.javaddit.features.community.entity.Community;
+import com.example.javaddit.features.post.entity.Post;
+import com.example.javaddit.features.user.entity.User;
+import com.example.javaddit.features.community.repository.CommunityRepository;
+import com.example.javaddit.features.post.repository.PostRepository;
+import com.example.javaddit.features.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

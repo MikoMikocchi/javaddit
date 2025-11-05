@@ -1,6 +1,6 @@
-package com.example.javaddit.repository;
+package com.example.javaddit.features.community.repository;
 
-import com.example.javaddit.entity.Community;
+import com.example.javaddit.features.community.entity.Community;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

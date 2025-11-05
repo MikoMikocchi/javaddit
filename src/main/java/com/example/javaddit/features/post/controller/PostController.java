@@ -1,8 +1,8 @@
-package com.example.javaddit.controller;
+package com.example.javaddit.features.post.controller;
 
-import com.example.javaddit.dto.PostRequest;
-import com.example.javaddit.dto.PostResponse;
-import com.example.javaddit.service.PostService;
+import com.example.javaddit.features.post.dto.PostRequest;
+import com.example.javaddit.features.post.dto.PostResponse;
+import com.example.javaddit.features.post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

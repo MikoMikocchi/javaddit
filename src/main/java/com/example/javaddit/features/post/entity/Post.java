@@ -1,5 +1,7 @@
-package com.example.javaddit.entity;
+package com.example.javaddit.features.post.entity;
 
+import com.example.javaddit.features.community.entity.Community;
+import com.example.javaddit.features.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
