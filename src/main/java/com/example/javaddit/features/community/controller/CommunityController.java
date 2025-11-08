@@ -24,6 +24,12 @@ public class CommunityController {
         return ResponseEntity.ok(communities);
     }
 
+    @GetMapping("/{name}")
+    public ResponseEntity<CommunityResponse> getCommunityByName(@PathVariable String name) {
+        CommunityResponse community = communityService.getCommunityByName(name);
+        return ResponseEntity.ok(community);
+    }
+
     @PostMapping
     public ResponseEntity<CommunityResponse> createCommunity(@Valid @RequestBody CommunityRequest request) {
         CommunityResponse created = communityService.createCommunity(request);

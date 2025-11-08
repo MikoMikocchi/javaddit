@@ -24,6 +24,18 @@ public class CommunityService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public CommunityResponse getCommunityByName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Community name cannot be null or empty");
+        }
+
+        Community community = communityRepository.findByName(name.toLowerCase())
+                .orElseThrow(() -> new IllegalArgumentException("Community not found: " + name));
+
+        return mapToResponse(community);
+    }
+
     @Transactional
     public CommunityResponse createCommunity(CommunityRequest request) {
         if (communityRepository.existsByName(request.getName())) {

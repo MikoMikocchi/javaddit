@@ -40,6 +40,18 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public PostResponse getPostById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Post ID cannot be null");
+        }
+
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + id));
+
+        return mapToResponse(post);
+    }
+
     @Transactional
     public PostResponse createPost(PostRequest request) {
         // Validate content or url (XOR)
