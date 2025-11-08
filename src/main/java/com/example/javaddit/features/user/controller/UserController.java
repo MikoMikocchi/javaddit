@@ -5,8 +5,7 @@ import com.example.javaddit.features.user.dto.UserPasswordUpdateRequest;
 import com.example.javaddit.features.user.dto.UserProfileUpdateRequest;
 import com.example.javaddit.features.user.dto.UserResponse;
 import com.example.javaddit.features.user.service.UserService;
-import com.example.javaddit.core.exception.AuthenticationException;
-import com.example.javaddit.core.exception.ValidationException;
+import com.example.javaddit.core.security.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/users")
@@ -30,83 +28,58 @@ public class UserController {
     }
 
     @PutMapping("/me/profile")
-    public ResponseEntity<UserResponse> updateProfile(@AuthenticationPrincipal Principal principal,
+    public ResponseEntity<UserResponse> updateProfile(@AuthenticationPrincipal UserPrincipal principal,
                                                       @Valid @RequestBody UserProfileUpdateRequest request) {
-        long userId = resolveAuthenticatedUserId(principal);
+        long userId = principal.getId();
         UserResponse updatedUser = userService.updateProfile(userId, request);
         return ResponseEntity.ok(updatedUser);
     }
 
     @PutMapping("/me/email")
-    public ResponseEntity<UserResponse> updateEmail(@AuthenticationPrincipal Principal principal,
+    public ResponseEntity<UserResponse> updateEmail(@AuthenticationPrincipal UserPrincipal principal,
                                                     @Valid @RequestBody UserEmailUpdateRequest request) {
-        long userId = resolveAuthenticatedUserId(principal);
+        long userId = principal.getId();
         UserResponse updatedUser = userService.updateEmail(userId, request);
         return ResponseEntity.ok(updatedUser);
     }
 
     @PutMapping("/me/password")
-    public ResponseEntity<Void> updatePassword(@AuthenticationPrincipal Principal principal,
+    public ResponseEntity<Void> updatePassword(@AuthenticationPrincipal UserPrincipal principal,
                                                @Valid @RequestBody UserPasswordUpdateRequest request) {
-        long userId = resolveAuthenticatedUserId(principal);
+        long userId = principal.getId();
         userService.updatePassword(userId, request);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/me/subscribe/{subscribedToId}")
-    public ResponseEntity<UserResponse> subscribe(@AuthenticationPrincipal Principal principal,
+    public ResponseEntity<UserResponse> subscribe(@AuthenticationPrincipal UserPrincipal principal,
                                                   @PathVariable long subscribedToId) {
-        long subscriberId = resolveAuthenticatedUserId(principal);
+        long subscriberId = principal.getId();
         UserResponse updatedUser = userService.subscribe(subscriberId, subscribedToId);
         return ResponseEntity.status(HttpStatus.CREATED).body(updatedUser);
     }
 
     @DeleteMapping("/me/unsubscribe/{subscribedToId}")
-    public ResponseEntity<UserResponse> unsubscribe(@AuthenticationPrincipal Principal principal,
+    public ResponseEntity<UserResponse> unsubscribe(@AuthenticationPrincipal UserPrincipal principal,
                                                     @PathVariable long subscribedToId) {
-        long subscriberId = resolveAuthenticatedUserId(principal);
+        long subscriberId = principal.getId();
         UserResponse updatedUser = userService.unsubscribe(subscriberId, subscribedToId);
         return ResponseEntity.ok(updatedUser);
     }
 
     @PostMapping("/me/block/{blockedId}")
-    public ResponseEntity<UserResponse> blockUser(@AuthenticationPrincipal Principal principal,
+    public ResponseEntity<UserResponse> blockUser(@AuthenticationPrincipal UserPrincipal principal,
                                                   @PathVariable long blockedId) {
-        long blockerId = resolveAuthenticatedUserId(principal);
+        long blockerId = principal.getId();
         UserResponse updatedUser = userService.blockUser(blockerId, blockedId);
         return ResponseEntity.status(HttpStatus.CREATED).body(updatedUser);
     }
 
     @DeleteMapping("/me/unblock/{blockedId}")
-    public ResponseEntity<UserResponse> unblockUser(@AuthenticationPrincipal Principal principal,
+    public ResponseEntity<UserResponse> unblockUser(@AuthenticationPrincipal UserPrincipal principal,
                                                     @PathVariable long blockedId) {
-        long blockerId = resolveAuthenticatedUserId(principal);
+        long blockerId = principal.getId();
         UserResponse updatedUser = userService.unblockUser(blockerId, blockedId);
         return ResponseEntity.ok(updatedUser);
-    }
-
-    /**
-     * Safely resolves the authenticated user's numeric ID from Principal.
-     * If the principal name is not numeric, falls back to resolving by username.
-     * Throws AuthenticationException if principal is null or name empty.
-     */
-    private long resolveAuthenticatedUserId(Principal principal) {
-        if (principal == null) {
-            throw new AuthenticationException("Unauthenticated: principal is null");
-        }
-        String name = principal.getName();
-        if (name == null || name.isBlank()) {
-            throw new ValidationException("Authenticated principal name is empty");
-        }
-        try {
-            return Long.parseLong(name);
-        } catch (NumberFormatException ex) {
-            // Fallback: treat principal name as username
-            UserResponse user = userService.getUserByUsername(name);
-            if (user.getId() == null) {
-                throw new AuthenticationException("Resolved user has null ID for principal name: " + name);
-            }
-            return user.getId();
-        }
     }
 }
