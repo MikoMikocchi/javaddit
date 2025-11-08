@@ -46,7 +46,7 @@ public class CommunityService {
         community.setName(request.getName().toLowerCase());
         community.setTitle(request.getTitle());
         community.setDescription(request.getDescription());
-        community.setIsNsfw(request.getIsNsfw() != null ? request.getIsNsfw() : false);
+        community.setIsNsfw(Boolean.TRUE.equals(request.getIsNsfw()));
 
         Community saved = communityRepository.save(community);
         return mapToResponse(saved);
