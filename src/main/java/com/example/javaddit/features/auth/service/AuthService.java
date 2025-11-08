@@ -5,6 +5,7 @@ import com.example.javaddit.core.exception.ConflictException;
 import com.example.javaddit.core.security.JwtProperties;
 import com.example.javaddit.core.security.JwtService;
 import com.example.javaddit.core.security.UserPrincipal;
+import com.example.javaddit.core.util.StringNormalizer;
 import com.example.javaddit.features.auth.dto.AuthResponse;
 import com.example.javaddit.features.auth.dto.LoginRequest;
 import com.example.javaddit.features.auth.dto.RefreshTokenRequest;
@@ -48,15 +49,15 @@ public class AuthService {
         Role role = roleRepository.findById(DEFAULT_ROLE)
                 .orElseThrow(() -> new IllegalStateException("Default role USER is not configured"));
 
-    String normalizedUsername = request.username().trim();
-    String normalizedEmail = request.email().trim().toLowerCase();
+        String normalizedUsername = StringNormalizer.normalizeUsername(request.username());
+        String normalizedEmail = StringNormalizer.normalizeEmail(request.email());
 
         User user = new User();
-    user.setUsername(normalizedUsername);
-    user.setEmail(normalizedEmail);
+        user.setUsername(normalizedUsername);
+        user.setEmail(normalizedEmail);
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         user.setIsDeleted(false);
-    user.getRoles().add(role);
+        user.getRoles().add(role);
 
         User saved = userRepository.save(user);
         UserPrincipal principal = UserPrincipal.fromUser(saved);
@@ -65,10 +66,10 @@ public class AuthService {
 
     @Transactional
     public AuthResponse login(LoginRequest request) {
-    String identifier = request.identifier().trim();
+        String identifier = StringNormalizer.normalizeIdentifier(request.identifier());
 
-    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-        identifier,
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                identifier,
                 request.password()
         );
 
@@ -85,7 +86,7 @@ public class AuthService {
 
     @Transactional
     public AuthResponse refresh(RefreshTokenRequest request) {
-        String tokenValue = request.refreshToken().trim();
+        String tokenValue = StringNormalizer.normalizeToken(request.refreshToken());
 
         RefreshToken stored = refreshTokenRepository.findByTokenAndRevokedFalse(tokenValue)
                 .orElseThrow(() -> new AuthenticationException("Invalid refresh token"));
@@ -136,8 +137,8 @@ public class AuthService {
     }
 
     private void validateRegistration(RegisterRequest request) {
-        String normalizedUsername = request.username().trim();
-        String normalizedEmail = request.email().trim().toLowerCase();
+        String normalizedUsername = StringNormalizer.normalizeUsername(request.username());
+        String normalizedEmail = StringNormalizer.normalizeEmail(request.email());
 
         if (userRepository.existsByUsernameIgnoreCase(normalizedUsername)) {
             throw new ConflictException("Username already in use");
