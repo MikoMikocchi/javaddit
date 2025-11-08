@@ -15,5 +15,8 @@ public class UserResponse {
     private String username;
     private String displayName;
     private String about;
+    private String profilePictureUrl;
+    private Boolean isPrivate;
+    private Boolean receiveNotifications;
     private LocalDateTime createdAt;
 }

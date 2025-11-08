@@ -42,6 +42,31 @@ public class User {
     @Column(columnDefinition = "TEXT")
     private String about;
 
+    @Column(name = "profile_picture_url", length = 2048)
+    private String profilePictureUrl;
+
+    @Column(name = "is_private", nullable = false)
+    private Boolean isPrivate = false;
+
+    @Column(name = "receive_notifications", nullable = false)
+    private Boolean receiveNotifications = true;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_subscriptions",
+            joinColumns = @JoinColumn(name = "subscriber_id"),
+            inverseJoinColumns = @JoinColumn(name = "subscribed_to_id")
+    )
+    private Set<User> subscriptions = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_blocks",
+            joinColumns = @JoinColumn(name = "blocker_id"),
+            inverseJoinColumns = @JoinColumn(name = "blocked_id")
+    )
+    private Set<User> blockedUsers = new HashSet<>();
+
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
 
