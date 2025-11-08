@@ -16,4 +16,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p ORDER BY p.createdAt DESC")
     List<Post> findAllOrderByCreatedAtDesc();
+
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Post p WHERE p.community.id = :communityId AND p.slug = :slug")
+    boolean existsByCommunityIdAndSlug(@Param("communityId") Long communityId, @Param("slug") String slug);
+
+    @Query("SELECT p.slug FROM Post p WHERE p.community.id = :communityId AND p.slug LIKE :slugPattern")
+    List<String> findSlugsByCommunityIdAndSlugPattern(@Param("communityId") Long communityId, @Param("slugPattern") String slugPattern);
 }

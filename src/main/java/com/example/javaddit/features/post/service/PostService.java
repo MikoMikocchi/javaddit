@@ -77,7 +77,7 @@ public class PostService {
         post.setCommunity(community);
         post.setAuthor(author);
         post.setTitle(request.getTitle());
-        post.setSlug(generateSlug(request.getTitle()));
+        post.setSlug(generateUniqueSlug(request.getTitle(), community.getId()));
         post.setContent(hasContent ? request.getContent() : null);
         post.setUrl(hasUrl ? request.getUrl() : null);
 
@@ -95,6 +95,25 @@ public class PostService {
                 .replaceAll("-+", "-");
 
         return slug.isEmpty() ? "post" : slug;
+    }
+
+    private String generateUniqueSlug(String title, Long communityId) {
+        String baseSlug = generateSlug(title);
+        String uniqueSlug = baseSlug;
+        int suffix = 2;
+
+        // Check if slug already exists and add suffix if needed
+        while (postRepository.existsByCommunityIdAndSlug(communityId, uniqueSlug)) {
+            uniqueSlug = baseSlug + "-" + suffix;
+            suffix++;
+
+            // Safety limit to prevent infinite loop
+            if (suffix > 1000) {
+                throw new IllegalStateException("Unable to generate unique slug after 1000 attempts");
+            }
+        }
+
+        return uniqueSlug;
     }
 
     private PostResponse mapToResponse(Post post) {

@@ -13,7 +13,13 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "posts")
+@Table(
+    name = "posts",
+    uniqueConstraints = @UniqueConstraint(
+        name = "uk_post_community_slug",
+        columnNames = {"community_id", "slug"}
+    )
+)
 @Getter
 @Setter
 @NoArgsConstructor
