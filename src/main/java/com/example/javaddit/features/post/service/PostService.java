@@ -1,5 +1,7 @@
 package com.example.javaddit.features.post.service;
 
+import com.example.javaddit.core.exception.NotFoundException;
+import com.example.javaddit.core.exception.ValidationException;
 import com.example.javaddit.features.post.dto.PostRequest;
 import com.example.javaddit.features.post.dto.PostResponse;
 import com.example.javaddit.features.community.entity.Community;
@@ -43,11 +45,11 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostResponse getPostById(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("Post ID cannot be null");
+            throw new ValidationException("Post ID cannot be null");
         }
 
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + id));
+                .orElseThrow(() -> new NotFoundException("Post not found: " + id));
 
         return mapToResponse(post);
     }
@@ -59,12 +61,12 @@ public class PostService {
         boolean hasUrl = request.getUrl() != null && !request.getUrl().trim().isEmpty();
 
         if (hasContent == hasUrl) {
-            throw new IllegalArgumentException("Post must have either content or url, but not both");
+            throw new ValidationException("Post must have either content or url, but not both");
         }
 
         // Find community
         Community community = communityRepository.findByName(request.getCommunityName())
-                .orElseThrow(() -> new IllegalArgumentException("Community not found: " + request.getCommunityName()));
+                .orElseThrow(() -> new NotFoundException("Community not found: " + request.getCommunityName()));
 
         // Get default user (in real app, this would be the authenticated user)
         User author = userRepository.findByUsername("default_user")

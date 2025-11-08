@@ -1,5 +1,7 @@
 package com.example.javaddit.features.comment.service;
 
+import com.example.javaddit.core.exception.NotFoundException;
+import com.example.javaddit.core.exception.ValidationException;
 import com.example.javaddit.features.comment.dto.CommentRequest;
 import com.example.javaddit.features.comment.dto.CommentResponse;
 import com.example.javaddit.features.comment.entity.Comment;
@@ -26,12 +28,12 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<CommentResponse> getCommentsByPostId(Long postId) {
         if (postId == null) {
-            throw new IllegalArgumentException("Post ID cannot be null");
+            throw new ValidationException("Post ID cannot be null");
         }
 
         // Verify that post exists
         postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));
+                .orElseThrow(() -> new NotFoundException("Post not found: " + postId));
 
         List<Comment> comments = commentRepository.findByPostIdOrderByCreatedAtAsc(postId);
 
@@ -43,12 +45,12 @@ public class CommentService {
     @Transactional
     public CommentResponse createComment(Long postId, CommentRequest request) {
         if (postId == null) {
-            throw new IllegalArgumentException("Post ID cannot be null");
+            throw new ValidationException("Post ID cannot be null");
         }
 
         // Find post
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));
+                .orElseThrow(() -> new NotFoundException("Post not found: " + postId));
 
         // Get default user (in real app, this would be the authenticated user)
         User author = userRepository.findByUsername("default_user")
@@ -59,11 +61,11 @@ public class CommentService {
         Long parentId = request.getParentId();
         if (parentId != null) {
             parent = commentRepository.findById(parentId)
-                    .orElseThrow(() -> new IllegalArgumentException("Parent comment not found: " + parentId));
+                    .orElseThrow(() -> new NotFoundException("Parent comment not found: " + parentId));
 
             // Verify that parent comment belongs to the same post
             if (!parent.getPost().getId().equals(postId)) {
-                throw new IllegalArgumentException("Parent comment does not belong to this post");
+                throw new ValidationException("Parent comment does not belong to this post");
             }
         }
 

@@ -1,5 +1,7 @@
 package com.example.javaddit.features.auth.service;
 
+import com.example.javaddit.core.exception.AuthenticationException;
+import com.example.javaddit.core.exception.ConflictException;
 import com.example.javaddit.core.security.JwtProperties;
 import com.example.javaddit.core.security.JwtService;
 import com.example.javaddit.core.security.UserPrincipal;
@@ -17,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,8 +75,8 @@ public class AuthService {
         Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(authToken);
-        } catch (AuthenticationException ex) {
-            throw new IllegalArgumentException("Invalid credentials", ex);
+        } catch (org.springframework.security.core.AuthenticationException ex) {
+            throw new AuthenticationException("Invalid credentials", ex);
         }
 
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
@@ -87,13 +88,13 @@ public class AuthService {
         String tokenValue = request.refreshToken().trim();
 
         RefreshToken stored = refreshTokenRepository.findByTokenAndRevokedFalse(tokenValue)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid refresh token"));
+                .orElseThrow(() -> new AuthenticationException("Invalid refresh token"));
 
         if (stored.getExpiresAt().isBefore(Instant.now())) {
             stored.setRevoked(true);
             stored.setRevokedAt(Instant.now());
             refreshTokenRepository.save(stored);
-            throw new IllegalArgumentException("Refresh token expired");
+            throw new AuthenticationException("Refresh token expired");
         }
 
         stored.setRevoked(true);
@@ -139,10 +140,10 @@ public class AuthService {
         String normalizedEmail = request.email().trim().toLowerCase();
 
         if (userRepository.existsByUsernameIgnoreCase(normalizedUsername)) {
-            throw new IllegalArgumentException("Username already in use");
+            throw new ConflictException("Username already in use");
         }
         if (userRepository.existsByEmailIgnoreCase(normalizedEmail)) {
-            throw new IllegalArgumentException("Email already in use");
+            throw new ConflictException("Email already in use");
         }
     }
 }

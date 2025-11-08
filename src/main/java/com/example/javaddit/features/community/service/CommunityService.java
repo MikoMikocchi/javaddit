@@ -1,5 +1,8 @@
 package com.example.javaddit.features.community.service;
 
+import com.example.javaddit.core.exception.ConflictException;
+import com.example.javaddit.core.exception.NotFoundException;
+import com.example.javaddit.core.exception.ValidationException;
 import com.example.javaddit.features.community.dto.CommunityRequest;
 import com.example.javaddit.features.community.dto.CommunityResponse;
 import com.example.javaddit.features.community.entity.Community;
@@ -27,11 +30,11 @@ public class CommunityService {
     @Transactional(readOnly = true)
     public CommunityResponse getCommunityByName(String name) {
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Community name cannot be null or empty");
+            throw new ValidationException("Community name cannot be null or empty");
         }
 
         Community community = communityRepository.findByName(name.toLowerCase())
-                .orElseThrow(() -> new IllegalArgumentException("Community not found: " + name));
+                .orElseThrow(() -> new NotFoundException("Community not found: " + name));
 
         return mapToResponse(community);
     }
@@ -39,7 +42,7 @@ public class CommunityService {
     @Transactional
     public CommunityResponse createCommunity(CommunityRequest request) {
         if (communityRepository.existsByName(request.getName())) {
-            throw new IllegalArgumentException("Community with name '" + request.getName() + "' already exists");
+            throw new ConflictException("Community with name '" + request.getName() + "' already exists");
         }
 
         Community community = new Community();

@@ -14,6 +14,51 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorEnvelope> handleValidationException(ValidationException ex) {
+        ErrorEnvelope error = new ErrorEnvelope(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorEnvelope> handleNotFoundException(NotFoundException ex) {
+        ErrorEnvelope error = new ErrorEnvelope(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorEnvelope> handleConflictException(ConflictException ex) {
+        ErrorEnvelope error = new ErrorEnvelope(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorEnvelope> handleAuthenticationException(AuthenticationException ex) {
+        ErrorEnvelope error = new ErrorEnvelope(
+                HttpStatus.UNAUTHORIZED.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    /**
+     * Keep for backward compatibility during migration
+     * @deprecated Use specific exception types instead
+     */
+    @Deprecated
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorEnvelope> handleIllegalArgumentException(IllegalArgumentException ex) {
         ErrorEnvelope error = new ErrorEnvelope(
