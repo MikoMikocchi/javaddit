@@ -17,7 +17,6 @@ public class VoteController {
 
     private final VoteService voteService;
 
-    // Temporary: In a real application, this would come from authentication context
     private static final Long DEFAULT_USER_ID = 1L;
 
     /**

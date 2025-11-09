@@ -32,6 +32,4 @@ class HelloControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Hello, Javaddit!"));
     }
-
-    // Security filter excluded from the slice; no extra beans required.
 }

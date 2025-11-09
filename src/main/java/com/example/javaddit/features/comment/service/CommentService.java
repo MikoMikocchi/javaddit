@@ -31,7 +31,6 @@ public class CommentService {
             throw new ValidationException("Post ID cannot be null");
         }
 
-        // Verify that post exists
         postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException("Post not found: " + postId));
 
@@ -48,28 +47,23 @@ public class CommentService {
             throw new ValidationException("Post ID cannot be null");
         }
 
-        // Find post
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException("Post not found: " + postId));
 
-        // Get default user (in real app, this would be the authenticated user)
         User author = userRepository.findByUsername("default_user")
                 .orElseThrow(() -> new IllegalStateException("Default user not found"));
 
-        // Validate parent comment if provided
         Comment parent = null;
         Long parentId = request.getParentId();
         if (parentId != null) {
             parent = commentRepository.findById(parentId)
                     .orElseThrow(() -> new NotFoundException("Parent comment not found: " + parentId));
 
-            // Verify that parent comment belongs to the same post
             if (!parent.getPost().getId().equals(postId)) {
                 throw new ValidationException("Parent comment does not belong to this post");
             }
         }
 
-        // Create comment
         Comment comment = new Comment();
         comment.setPost(post);
         comment.setAuthor(author);

@@ -17,7 +17,6 @@ class UserPrincipalFallbackIntegrationTest {
 
     @Test
     void userPrincipal_fromUser_containsId_andUsername() {
-        // arrange: уникальное имя, чтобы не нарушать unique index между запусками
         String uniqueUsername = "fallback_user_" + System.nanoTime();
         User user = new User();
         user.setUsername(uniqueUsername);
@@ -25,10 +24,8 @@ class UserPrincipalFallbackIntegrationTest {
         user.setPasswordHash("noop");
         User savedUser = userRepository.save(user);
 
-        // act
         UserPrincipal principal = UserPrincipal.fromUser(savedUser);
 
-        // assert
         assertThat(principal.getId()).isNotNull();
         assertThat(principal.getId()).isEqualTo(savedUser.getId());
         assertThat(principal.getUsername()).isEqualTo(uniqueUsername);

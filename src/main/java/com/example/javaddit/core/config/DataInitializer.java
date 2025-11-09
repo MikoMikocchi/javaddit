@@ -25,7 +25,6 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) {
         Role userRole = ensureDefaultRole();
 
-        // Create a default user if none exists
         if (userRepository.count() == 0) {
             User defaultUser = new User();
             defaultUser.setUsername("default_user");

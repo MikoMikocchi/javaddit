@@ -31,7 +31,6 @@ public class UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException("User not found: " + username));
 
-        // Don't return deleted users
         if (user.getIsDeleted()) {
             throw new NotFoundException("User not found: " + username);
         }

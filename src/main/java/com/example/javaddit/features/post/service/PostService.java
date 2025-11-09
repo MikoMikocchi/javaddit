@@ -56,7 +56,6 @@ public class PostService {
 
     @Transactional
     public PostResponse createPost(PostRequest request) {
-        // Validate content or url (XOR)
         boolean hasContent = request.getContent() != null && !request.getContent().trim().isEmpty();
         boolean hasUrl = request.getUrl() != null && !request.getUrl().trim().isEmpty();
 
@@ -64,15 +63,12 @@ public class PostService {
             throw new ValidationException("Post must have either content or url, but not both");
         }
 
-        // Find community
         Community community = communityRepository.findByName(request.getCommunityName())
                 .orElseThrow(() -> new NotFoundException("Community not found: " + request.getCommunityName()));
 
-        // Get default user (in real app, this would be the authenticated user)
         User author = userRepository.findByUsername("default_user")
                 .orElseThrow(() -> new IllegalStateException("Default user not found"));
 
-        // Create post
         Post post = new Post();
         post.setCommunity(community);
         post.setAuthor(author);
@@ -102,12 +98,10 @@ public class PostService {
         String uniqueSlug = baseSlug;
         int suffix = 2;
 
-        // Check if slug already exists and add suffix if needed
         while (postRepository.existsByCommunityIdAndSlug(communityId, uniqueSlug)) {
             uniqueSlug = baseSlug + "-" + suffix;
             suffix++;
 
-            // Safety limit to prevent infinite loop
             if (suffix > 1000) {
                 throw new IllegalStateException("Unable to generate unique slug after 1000 attempts");
             }

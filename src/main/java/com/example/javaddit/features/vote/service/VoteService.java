@@ -38,7 +38,6 @@ public class VoteService {
      */
     @Transactional
     public VoteResponse voteOnPost(Long userId, Long postId, VoteType voteType) {
-        // Validate parameters
         if (postId == null) {
             throw new ValidationException("Post ID cannot be null");
         }
@@ -46,15 +45,12 @@ public class VoteService {
             throw new ValidationException("User ID cannot be null");
         }
 
-        // Validate post exists
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException("Post not found: " + postId));
 
-        // Validate user exists (in real app, this would be the authenticated user)
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found: " + userId));
 
-        // Check if user already voted
         Optional<Vote> existingVote = voteRepository.findByUserIdAndPostId(userId, postId);
 
         VoteType resultVoteType;
@@ -64,19 +60,16 @@ public class VoteService {
             Vote vote = existingVote.get();
 
             if (vote.getVoteType() == voteType) {
-                // Same vote type - remove vote (toggle)
                 voteRepository.delete(vote);
                 resultVoteType = null;
                 message = "Vote removed";
             } else {
-                // Different vote type - update vote
                 vote.setVoteType(voteType);
                 voteRepository.save(vote);
                 resultVoteType = voteType;
                 message = "Vote updated";
             }
         } else {
-            // No existing vote - create new vote
             Vote newVote = new Vote();
             newVote.setUser(user);
             newVote.setPost(post);
@@ -86,7 +79,6 @@ public class VoteService {
             message = "Vote recorded";
         }
 
-        // Refresh post to get updated score (calculated by database triggers)
         Post updatedPost = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalStateException("Post not found after voting"));
 
@@ -105,7 +97,6 @@ public class VoteService {
      */
     @Transactional
     public VoteResponse voteOnComment(Long userId, Long commentId, VoteType voteType) {
-        // Validate parameters
         if (commentId == null) {
             throw new ValidationException("Comment ID cannot be null");
         }
@@ -113,15 +104,12 @@ public class VoteService {
             throw new ValidationException("User ID cannot be null");
         }
 
-        // Validate comment exists
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("Comment not found: " + commentId));
 
-        // Validate user exists (in real app, this would be the authenticated user)
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found: " + userId));
 
-        // Check if user already voted
         Optional<Vote> existingVote = voteRepository.findByUserIdAndCommentId(userId, commentId);
 
         VoteType resultVoteType;
@@ -131,19 +119,16 @@ public class VoteService {
             Vote vote = existingVote.get();
 
             if (vote.getVoteType() == voteType) {
-                // Same vote type - remove vote (toggle)
                 voteRepository.delete(vote);
                 resultVoteType = null;
                 message = "Vote removed";
             } else {
-                // Different vote type - update vote
                 vote.setVoteType(voteType);
                 voteRepository.save(vote);
                 resultVoteType = voteType;
                 message = "Vote updated";
             }
         } else {
-            // No existing vote - create new vote
             Vote newVote = new Vote();
             newVote.setUser(user);
             newVote.setComment(comment);
@@ -153,7 +138,6 @@ public class VoteService {
             message = "Vote recorded";
         }
 
-        // Refresh comment to get updated score (calculated by database triggers)
         Comment updatedComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalStateException("Comment not found after voting"));
 
@@ -170,7 +154,6 @@ public class VoteService {
      */
     @Transactional
     public VoteResponse removeVoteFromPost(Long userId, Long postId) {
-        // Validate parameters
         if (postId == null) {
             throw new ValidationException("Post ID cannot be null");
         }
@@ -178,17 +161,14 @@ public class VoteService {
             throw new ValidationException("User ID cannot be null");
         }
 
-        // Validate post exists
         postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException("Post not found: " + postId));
 
-        // Find and delete vote
         Vote vote = voteRepository.findByUserIdAndPostId(userId, postId)
                 .orElseThrow(() -> new NotFoundException("Vote not found"));
 
         voteRepository.delete(Objects.requireNonNull(vote));
 
-        // Refresh post to get updated score
         Post updatedPost = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalStateException("Post not found after removing vote"));
 
@@ -205,7 +185,6 @@ public class VoteService {
      */
     @Transactional
     public VoteResponse removeVoteFromComment(Long userId, Long commentId) {
-        // Validate parameters
         if (commentId == null) {
             throw new ValidationException("Comment ID cannot be null");
         }
@@ -213,17 +192,14 @@ public class VoteService {
             throw new ValidationException("User ID cannot be null");
         }
 
-        // Validate comment exists
         commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("Comment not found: " + commentId));
 
-        // Find and delete vote
         Vote vote = voteRepository.findByUserIdAndCommentId(userId, commentId)
                 .orElseThrow(() -> new NotFoundException("Vote not found"));
 
         voteRepository.delete(Objects.requireNonNull(vote));
 
-        // Refresh comment to get updated score
         Comment updatedComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalStateException("Comment not found after removing vote"));
 
