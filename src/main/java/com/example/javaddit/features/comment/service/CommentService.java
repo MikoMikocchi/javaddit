@@ -42,16 +42,19 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResponse createComment(Long postId, CommentRequest request) {
+    public CommentResponse createComment(Long authorId, Long postId, CommentRequest request) {
         if (postId == null) {
             throw new ValidationException("Post ID cannot be null");
+        }
+        if (authorId == null) {
+            throw new ValidationException("Author ID cannot be null");
         }
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException("Post not found: " + postId));
 
-        User author = userRepository.findByUsername("default_user")
-                .orElseThrow(() -> new IllegalStateException("Default user not found"));
+        User author = userRepository.findById(authorId)
+                .orElseThrow(() -> new NotFoundException("User not found: " + authorId));
 
         Comment parent = null;
         Long parentId = request.getParentId();

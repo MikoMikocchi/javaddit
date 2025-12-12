@@ -1,5 +1,6 @@
 package com.example.javaddit.features.post.controller;
 
+import com.example.javaddit.core.security.UserPrincipal;
 import com.example.javaddit.features.post.dto.PostRequest;
 import com.example.javaddit.features.post.dto.PostResponse;
 import com.example.javaddit.features.post.service.PostService;
@@ -7,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,8 +22,7 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<List<PostResponse>> getPosts(
-            @RequestParam(required = false) String community
-    ) {
+            @RequestParam(required = false) String community) {
         List<PostResponse> posts = postService.getPosts(community);
         return ResponseEntity.ok(posts);
     }
@@ -33,8 +34,9 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<PostResponse> createPost(@Valid @RequestBody PostRequest request) {
-        PostResponse created = postService.createPost(request);
+    public ResponseEntity<PostResponse> createPost(@AuthenticationPrincipal UserPrincipal principal,
+            @Valid @RequestBody PostRequest request) {
+        PostResponse created = postService.createPost(principal.getId(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 }

@@ -55,19 +55,22 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponse createPost(PostRequest request) {
+    public PostResponse createPost(Long authorId, PostRequest request) {
         boolean hasContent = request.getContent() != null && !request.getContent().trim().isEmpty();
         boolean hasUrl = request.getUrl() != null && !request.getUrl().trim().isEmpty();
 
         if (hasContent == hasUrl) {
             throw new ValidationException("Post must have either content or url, but not both");
         }
+        if (authorId == null) {
+            throw new ValidationException("Author ID cannot be null");
+        }
 
         Community community = communityRepository.findByName(request.getCommunityName())
                 .orElseThrow(() -> new NotFoundException("Community not found: " + request.getCommunityName()));
 
-        User author = userRepository.findByUsername("default_user")
-                .orElseThrow(() -> new IllegalStateException("Default user not found"));
+        User author = userRepository.findById(authorId)
+                .orElseThrow(() -> new NotFoundException("User not found: " + authorId));
 
         Post post = new Post();
         post.setCommunity(community);
