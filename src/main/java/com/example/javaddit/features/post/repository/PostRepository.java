@@ -21,5 +21,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     boolean existsByCommunityIdAndSlug(@Param("communityId") Long communityId, @Param("slug") String slug);
 
     @Query("SELECT p.slug FROM Post p WHERE p.community.id = :communityId AND p.slug LIKE :slugPattern")
-    List<String> findSlugsByCommunityIdAndSlugPattern(@Param("communityId") Long communityId, @Param("slugPattern") String slugPattern);
+    List<String> findSlugsByCommunityIdAndSlugPattern(@Param("communityId") Long communityId,
+            @Param("slugPattern") String slugPattern);
+
+    @Query("SELECT p.score FROM Post p WHERE p.id = :postId")
+    Integer findScoreById(@Param("postId") Long postId);
 }

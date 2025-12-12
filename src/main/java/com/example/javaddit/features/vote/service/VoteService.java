@@ -32,7 +32,8 @@ public class VoteService {
     private final UserRepository userRepository;
 
     /**
-     * Vote on a post. If the user already voted with the same type, remove the vote (toggle).
+     * Vote on a post. If the user already voted with the same type, remove the vote
+     * (toggle).
      * If the user voted with a different type, update the vote.
      * If the user hasn't voted yet, create a new vote.
      */
@@ -79,19 +80,17 @@ public class VoteService {
             message = "Vote recorded";
         }
 
-        Post updatedPost = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalStateException("Post not found after voting"));
-
-        Integer score = updatedPost.getScore();
-        if (score == null) {
+        voteRepository.flush();
+        Integer score = postRepository.findScoreById(postId);
+        if (score == null)
             score = 0;
-        }
 
         return new VoteResponse(message, score, resultVoteType);
     }
 
     /**
-     * Vote on a comment. If the user already voted with the same type, remove the vote (toggle).
+     * Vote on a comment. If the user already voted with the same type, remove the
+     * vote (toggle).
      * If the user voted with a different type, update the vote.
      * If the user hasn't voted yet, create a new vote.
      */
@@ -138,13 +137,10 @@ public class VoteService {
             message = "Vote recorded";
         }
 
-        Comment updatedComment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalStateException("Comment not found after voting"));
-
-        Integer score = updatedComment.getScore();
-        if (score == null) {
+        voteRepository.flush();
+        Integer score = commentRepository.findScoreById(commentId);
+        if (score == null)
             score = 0;
-        }
 
         return new VoteResponse(message, score, resultVoteType);
     }
@@ -168,14 +164,10 @@ public class VoteService {
                 .orElseThrow(() -> new NotFoundException("Vote not found"));
 
         voteRepository.delete(Objects.requireNonNull(vote));
-
-        Post updatedPost = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalStateException("Post not found after removing vote"));
-
-        Integer score = updatedPost.getScore();
-        if (score == null) {
+        voteRepository.flush();
+        Integer score = postRepository.findScoreById(postId);
+        if (score == null)
             score = 0;
-        }
 
         return new VoteResponse("Vote removed", score, null);
     }
@@ -199,14 +191,10 @@ public class VoteService {
                 .orElseThrow(() -> new NotFoundException("Vote not found"));
 
         voteRepository.delete(Objects.requireNonNull(vote));
-
-        Comment updatedComment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalStateException("Comment not found after removing vote"));
-
-        Integer score = updatedComment.getScore();
-        if (score == null) {
+        voteRepository.flush();
+        Integer score = commentRepository.findScoreById(commentId);
+        if (score == null)
             score = 0;
-        }
 
         return new VoteResponse("Vote removed", score, null);
     }
