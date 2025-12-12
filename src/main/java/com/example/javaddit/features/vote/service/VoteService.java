@@ -82,8 +82,9 @@ public class VoteService {
 
         voteRepository.flush();
         Integer score = postRepository.findScoreById(postId);
-        if (score == null)
-            score = 0;
+        if (score == null) {
+            throw new IllegalStateException("Post not found after voting");
+        }
 
         return new VoteResponse(message, score, resultVoteType);
     }
@@ -139,8 +140,9 @@ public class VoteService {
 
         voteRepository.flush();
         Integer score = commentRepository.findScoreById(commentId);
-        if (score == null)
-            score = 0;
+        if (score == null) {
+            throw new IllegalStateException("Comment not found after voting");
+        }
 
         return new VoteResponse(message, score, resultVoteType);
     }
@@ -166,8 +168,9 @@ public class VoteService {
         voteRepository.delete(Objects.requireNonNull(vote));
         voteRepository.flush();
         Integer score = postRepository.findScoreById(postId);
-        if (score == null)
-            score = 0;
+        if (score == null) {
+            throw new IllegalStateException("Post not found after removing vote");
+        }
 
         return new VoteResponse("Vote removed", score, null);
     }
@@ -193,8 +196,9 @@ public class VoteService {
         voteRepository.delete(Objects.requireNonNull(vote));
         voteRepository.flush();
         Integer score = commentRepository.findScoreById(commentId);
-        if (score == null)
-            score = 0;
+        if (score == null) {
+            throw new IllegalStateException("Comment not found after removing vote");
+        }
 
         return new VoteResponse("Vote removed", score, null);
     }
